@@ -41,12 +41,36 @@ var gameState = STATE_MENUSCREEN;
 //Timers
 var gameTimer = 0;
 
+// abitrary choice for 1m
+var METER = 35;
+// very exaggerated gravity (6x)
+var GRAVITY = METER * 9.8 * 6;
+// max horizontal speed (10 tiles per second)
+var MAXDX = METER * 10;
+// max vertical speed (15 tiles per second)
+var MAXDY = METER * 15;
+// horizontal acceleration - take 1/2 second to reach maxdx
+var ACCEL = MAXDX * 2;
+// horizontal friction - take 1/6 second to stop from maxdx
+var FRICTION = MAXDX * 6;
+// (a large) instantaneous jump impulse
+var JUMP = METER * 1500;
+
 
 // Game Variables
 //var HUD = new HUD();
 var player1 = new Player1();
 var player2 = new Player2();
 var keyboard = new Keyboard();
+
+function bound(value, min, max)
+{
+	if(value < min)
+	return min;
+	if(value > max)
+	return max;
+	return value;
+}
 
 // Run Statement
 function run () {	

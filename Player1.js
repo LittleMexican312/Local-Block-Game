@@ -13,6 +13,9 @@ var Player1 = function() {
 	
 	this.rotation = 0;
 	
+	this.falling = true;
+	this.jumping = false;
+	
 	this.cooldownTimer = 0;
 	
 };
@@ -26,8 +29,14 @@ Player1.prototype.update = function(deltaTime)
 	var right = false;
 	var up = false;
 	var down = false;
-	var jumping = false;
-	var PLAYER_SPEED = 2;
+	var jump = false;
+	var PLAYER_SPEED = 8;
+	
+	var wasleft = this.velocity.x < 0;
+	var wasright = this.velocity.x > 0;
+	var falling = this.falling;
+	var ddx = 0; // acceleration
+	var ddy = GRAVITY;
 
 //Check if Key is Down
 	if(keyboard.isKeyDown(keyboard.KEY_LEFT) == true)
@@ -49,6 +58,40 @@ Player1.prototype.update = function(deltaTime)
 	{
 		down = true;
 	}
+
+	
+	if (left)
+		ddx = ddx - ACCEL; // player wants to go left
+	else if (wasleft)
+		ddx = ddx + FRICTION; // player was going left, but not any more
+		
+	if (right)
+		ddx = ddx + ACCEL; // player wants to go right
+	else if (wasright)
+		ddx = ddx - FRICTION; // player was going right, but not any more
+		
+	if (jump && !this.jumping && !falling)
+	{
+		ddy = ddy - JUMP; // apply an instantaneous (large) vertical impulse
+		this.jumping = true;
+	}
+	
+
+	// calculate the new position and velocity:
+	this.position.y = Math.floor(this.position.y + (deltaTime * this.velocity.y));
+	this.position.x = Math.floor(this.position.x + (deltaTime * this.velocity.x));
+	
+	this.velocity.x = bound(this.velocity.x + (deltaTime * ddx), -MAXDX, MAXDX);
+	this.velocity.y = bound(this.velocity.y + (deltaTime * ddy), -MAXDY, MAXDY);
+	
+	
+	if ((wasleft && (this.velocity.x > 0)) ||
+		(wasright && (this.velocity.x < 0)))
+		{
+			// clamp at zero to prevent friction from making us jiggle side to side
+			this.velocity.x = 0;
+		}
+
 
 //Add Player1 Speed
 	if (left == true) {
