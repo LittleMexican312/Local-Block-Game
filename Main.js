@@ -44,7 +44,7 @@ var gameTimer = 0;
 // abitrary choice for 1m
 var METER = 35;
 // very exaggerated gravity (6x)
-var GRAVITY = METER * 9.8 * 6;
+var GRAVITY = METER * 8;
 // max horizontal speed (10 tiles per second)
 var MAXDX = METER * 10;
 // max vertical speed (15 tiles per second)
@@ -54,7 +54,7 @@ var ACCEL = MAXDX * 2;
 // horizontal friction - take 1/6 second to stop from maxdx
 var FRICTION = MAXDX * 6;
 // (a large) instantaneous jump impulse
-var JUMP = METER * 1500;
+var JUMP = METER * 500;
 
 
 // Game Variables
@@ -101,9 +101,9 @@ function run () {
 }
 
 function runMainMenu(deltaTime) {
-	player1.update();
+	player1.update(deltaTime);
 	player1.draw();
-	player2.update();
+	player2.update(deltaTime);
 	player2.draw();
 		
 	// load the image to use for the level tiles
@@ -111,7 +111,7 @@ function runMainMenu(deltaTime) {
 	menuBottom.src = "Menu Images/Bottom Platform Menu.png";
 	
 	// 
-	context.drawImage(menuBottom, 0, 0);
+	//context.drawImage(menuBottom, 0, 0);
 	
 	//updateMainMenu();
 }

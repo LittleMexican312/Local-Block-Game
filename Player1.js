@@ -2,7 +2,7 @@ var Player1 = function() {
 	this.image = document.createElement("img");
 	
 	this.position = new Vector2();
-	this.position.set(SCREEN_WIDTH/2, SCREEN_HEIGHT/2);
+	this.position.set(200, 200);
 	
 	this.width = 32;
 	this.height = 32;
@@ -112,28 +112,27 @@ Player1.prototype.update = function(deltaTime)
 	//Player1 Position Updates
     if (player1.position.x >= SCREEN_WIDTH - player1.width/2) {
 
-        player1.position.x -= 2; 
+        player1.position.x = SCREEN_WIDTH - player1.width/2; 
 
     }
 
     if (player1.position.x <= 0 + player1.width/2) {
 
-        player1.position.x += 2; 
+        player1.position.x = 0 + player1.width/2; 
+
+    } 
+	
+	 if (player1.position.y >= SCREEN_HEIGHT - player1.height/2) {
+
+        player1.position.y = SCREEN_HEIGHT - player1.height/2; 
+
+    } 
+	
+	if (player1.position.y <= 0 + player1.height/2) {
+
+        player1.position.y = 0 + player1.height/2; 
 
     }  
-
-    if (player1.position.y >= SCREEN_HEIGHT - 56) {
-
-        player1.position.y -= 2.7;
-		down = false; 
-
-    }
-
-    if (player1.position.y <= 0 + player1.height/2) {
-
-        player1.position.y += 3; 
-
-    }
 }
 	
 Player1.prototype.draw = function()

@@ -13,6 +13,9 @@ var Player2 = function() {
 	
 	this.rotation = 0;
 	
+	this.falling = true;
+	this.jumping = false;
+	
 	this.cooldownTimer = 0;
 	
 };
@@ -26,8 +29,17 @@ Player2.prototype.update = function(deltaTime)
 	var right = false;
 	var up = false;
 	var down = false;
-	var jumping = false;
-	var PLAYER_SPEED = 2;
+	var jump = false;
+	var PLAYER_SPEED = 8;
+
+	var wasleft = this.velocity.x < 0;
+	var wasright = this.velocity.x > 0;
+	var falling = this.falling;
+	var ddx = 0; // acceleration
+	var ddy = GRAVITY;
+	var gravity = 0.3;
+
+	this.cooldownTimer -= deltaTime;
 
 //Check if Key is Down
 	if(keyboard.isKeyDown(keyboard.KEY_A) == true)
@@ -39,16 +51,53 @@ Player2.prototype.update = function(deltaTime)
 	{
 		right = true;
 	}
-	if(keyboard.isKeyDown(keyboard.KEY_W) == true) 
+	if(keyboard.isKeyDown(keyboard.KEY_W) == true && this.cooldownTimer <= 0) 
 	{
 		up = true;
 		jumping = true;
+		player2.velocity.y = 8 * 2;
+		this.cooldownTimer += 1;
 	}
 	
 	if(keyboard.isKeyDown(keyboard.KEY_S) == true)
 	{
 		down = true;
 	}
+
+
+	player2.velocity.y += gravity;
+	
+	if (left)
+		ddx = ddx - ACCEL; // player wants to go left
+	else if (wasleft)
+		ddx = ddx + FRICTION; // player was going left, but not any more
+		
+	if (right)
+		ddx = ddx + ACCEL; // player wants to go right
+	else if (wasright)
+		ddx = ddx - FRICTION; // player was going right, but not any more
+		
+	if (jump && !this.jumping && !falling)
+	{
+		ddy = ddy - JUMP; // apply an instantaneous (large) vertical impulse
+		this.jumping = true;
+	}
+	
+
+	// calculate the new position and velocity:
+	this.position.y = Math.floor(this.position.y + (deltaTime * this.velocity.y));
+	this.position.x = Math.floor(this.position.x + (deltaTime * this.velocity.x));
+	
+	this.velocity.x = bound(this.velocity.x + (deltaTime * ddx), -MAXDX, MAXDX);
+	this.velocity.y = bound(this.velocity.y + (deltaTime * ddy), -MAXDY, MAXDY);
+	
+	
+	if ((wasleft && (this.velocity.x > 0)) ||
+		(wasright && (this.velocity.x < 0)))
+		{
+			// clamp at zero to prevent friction from making us jiggle side to side
+			this.velocity.x = 0;
+		}
 
 //Add Player2 Speed
 	if (left == true) {
@@ -61,6 +110,7 @@ Player2.prototype.update = function(deltaTime)
 		jumping = true;
 		this.position.y -= PLAYER_SPEED;
 	}
+	
 	if (down == true && player2.position.y <= SCREEN_HEIGHT - 21 ) {
 		this.position.y += PLAYER_SPEED;
 	}
@@ -69,28 +119,30 @@ Player2.prototype.update = function(deltaTime)
 	//Player2 Position Updates
     if (player2.position.x >= SCREEN_WIDTH - player2.width/2) {
 
-        player2.position.x -= 2; 
+        player2.position.x = SCREEN_WIDTH - player2.width/2; 
 
     }
 
     if (player2.position.x <= 0 + player2.width/2) {
 
-        player2.position.x += 2; 
+        player2.position.x = 0 + player2.width/2; 
 
-    }  
+    } 
+	
+	 if (player2.position.y >= SCREEN_HEIGHT - player2.height/2) {
 
-    if (player2.position.y >= SCREEN_HEIGHT - 56) {
+        player2.position.y = SCREEN_HEIGHT - player2.height/2;
+		jumping = false; 
 
-        player2.position.y -= 2.7;
-		down = false; 
+    } 
+	
+	if (player2.position.y <= 0 + player2.height/2) {
 
-    }
+        player2.position.y = 0 + player2.height/2; 
 
-    if (player2.position.y <= 0 + player2.height/2) {
+    } 
 
-        player2.position.y += 3; 
 
-    }
 }
 	
 Player2.prototype.draw = function()
